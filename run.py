@@ -30,12 +30,6 @@ def main():
             if hasattr(v, 'keywords') and 'retry' in v.keywords:
                 v.keywords['retry'] = args.retry
                 supported_VLM[k] = v
-    
-    if args.retry is not None:
-        for k, v in supported_VLM.items():
-            if hasattr(v, 'keywords') and 'retry' in v.keywords:
-                v.keywords['retry'] = args.retry
-                supported_VLM[k] = v
 
     rank, world_size = get_rank_and_world_size()
     if world_size > 1:
@@ -50,6 +44,7 @@ def main():
 
         for _, dataset_name in enumerate(args.data):
             custom_flag = False
+            
             if dataset_name not in dataset_URLs:
                 dataset_name = abbr2full(dataset_name)
             
