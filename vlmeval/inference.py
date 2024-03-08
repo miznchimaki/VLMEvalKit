@@ -89,7 +89,7 @@ def infer_data(model_name, work_dir, dataset_name, out_file, verbose=False, api_
         res = {k: res[k] for k in data_indices}
         dump(res, out_file)
         return
-
+    
     # Data need to be inferred
     data = data[~data['index'].isin(res)]
     lt = len(data)
@@ -189,7 +189,6 @@ def infer_data_job(model, work_dir, model_name, dataset_name, verbose=False, api
             dump(results, prev_file)
         if world_size > 1: dist.barrier()
 
-    
     tmpl = osp.join(work_dir, '{}' + f'{world_size}_{dataset_name}.pkl')
     out_file = tmpl.format(rank)
 
@@ -206,7 +205,7 @@ def infer_data_job(model, work_dir, model_name, dataset_name, verbose=False, api
             assert x in data_all
         data['prediction'] = [str(data_all[x]) for x in data['index']]
         data.pop('image')
-        
+
         dump(data, result_file)             
         for i in range(world_size):
             os.remove(tmpl.format(i))

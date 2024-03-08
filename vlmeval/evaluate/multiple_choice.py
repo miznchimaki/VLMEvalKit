@@ -254,7 +254,7 @@ def multiple_choice_eval(eval_file, dataset="default", model='chatgpt-0613', npr
     for k in data.keys():
         data[k.lower() if k not in list(string.ascii_uppercase) else k] = data.pop(k)
 
-    if dataset != "default":
+    if dataset != 'default':
         meta = TSVDataset(dataset).data
     else:
         logger.warning('Dataset is not provided, try to use the original `eval_file` as meta data. ')
@@ -335,7 +335,7 @@ def multiple_choice_eval(eval_file, dataset="default", model='chatgpt-0613', npr
 def parse_args():
     parser = argparse.ArgumentParser(description="Inference LLM Answers. ")
     parser.add_argument("data", type=str, help="The question set for inference, in excel / tsv / json format. ")
-    parser.add_argument("--model", type=str, help="The LLM (GPT) used for inference. ", default='chatgpt-0613')
+    parser.add_argument("--model", type=str, help="The LLM (GPT) used for inference. ", default='chatgpt-0613', choices=['chatgpt-0613', 'exact_matching', 'gpt-4-0125'])
     parser.add_argument(
         "--dataset", 
         type=str, 
