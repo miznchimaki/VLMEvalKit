@@ -58,7 +58,6 @@ class StepAPI_INT(BaseAPI):
         return messages
 
     def generate_inner(self, inputs, **kwargs) -> str:
-        print(inputs, '\n')
         payload = dict(
             model=self.model,
             max_tokens=self.max_tokens,
