@@ -1,5 +1,6 @@
 from vlmeval.smp import *
 from vlmeval.api.base import BaseAPI
+import warnings
 
 
 class InternVL2ProInt(BaseAPI):
@@ -22,6 +23,8 @@ class InternVL2ProInt(BaseAPI):
             self.key = key
         else:
             self.key = os.environ.get('INTERNVL2_PRO_API_KEY', '')
+
+        warnings.warn('InternVL2-Pro API currently does not accept `temperature` and `max_tokens` paraemters. ')
 
         super().__init__(retry=retry, wait=wait, verbose=verbose, system_prompt=system_prompt, **kwargs)
 
