@@ -10,10 +10,11 @@ from .reka import Reka
 from .glm_vision import GLMVisionAPI
 from .cloudwalk import CWWrapper
 from .sensechat_vision import SenseChatVisionAPI
+from .internvl2_pro_int import InternVL2ProInt
 
 __all__ = [
     'OpenAIWrapper', 'HFChatModel', 'OpenAIWrapperInternal', 'GeminiWrapper',
     'GPT4V', 'GPT4V_Internal', 'GeminiProVision', 'QwenVLWrapper', 'QwenVLAPI',
     'QwenAPI', 'Claude3V', 'Claude_Wrapper', 'Reka', 'Step1V_INT', 'GLMVisionAPI',
-    'CWWrapper', 'SenseChatVisionAPI'
+    'CWWrapper', 'SenseChatVisionAPI', 'InternVL2ProInt'
 ]

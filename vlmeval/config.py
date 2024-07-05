@@ -61,6 +61,7 @@ api_models = {
     # CloudWalk
     'CloudWalk': partial(CWWrapper, model='cw-congrong-v1.5', temperature=0, retry=10),
     'SenseChat-5-Vision': partial(SenseChatVisionAPI, model='SenseChat-5-Vision', temperature=0, retry=10),
+    'InternVL2ProInt': partial(InternVL2ProInt, model='InternVL2-Pro', temperature=0, retry=10)
 }
 
 minicpm_series = {
