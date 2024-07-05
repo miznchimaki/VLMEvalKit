@@ -41,7 +41,7 @@ class InternVL2ProInt(BaseAPI):
             'api_key': self.key
         }
         try:
-            response = requests.post(url, files=files, data=data)
+            response = requests.post(self.api_base, files=files, data=data)
             ret_code = response.status_code
             ret_code = 0 if (200 <= int(ret_code) < 300) else ret_code
 
