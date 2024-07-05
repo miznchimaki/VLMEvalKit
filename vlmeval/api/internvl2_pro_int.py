@@ -38,7 +38,7 @@ class InternVL2ProInt(BaseAPI):
         files = [('files', open(file_path, 'rb')) for file_path in image_files]
         data = {
             'question': text,
-            'api_key': api_key
+            'api_key': self.key
         }
         try:
             response = requests.post(url, files=files, data=data)
