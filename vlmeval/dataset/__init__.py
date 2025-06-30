@@ -71,6 +71,7 @@ from .GUI.screenspot import ScreenSpot
 from .GUI.screenspot_pro import ScreenSpot_Pro
 from .mmifeval import MMIFEval
 from .chartmimic import ChartMimic
+from .video_dataset_config import supported_video_datasets
 
 
 class ConcatDataset(ImageBaseDataset):
