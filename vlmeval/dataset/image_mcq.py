@@ -840,8 +840,8 @@ class MMERealWorld(ImageMCQDataset):
                 datas.loc[index, "E"] = options[4][4:]
             return datas
 
+        update_flag = False
         if self.local_data_dir is None:
-            update_flag = False
             cache_path = get_cache_path(repo_id)
             if cache_path is not None and check_integrity(cache_path):
                 dataset_path = cache_path
