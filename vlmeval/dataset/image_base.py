@@ -36,10 +36,13 @@ class ImageBaseDataset:
     DATASET_URL = {}
     DATASET_MD5 = {}
 
-    def __init__(self, dataset='MMBench', skip_noimg=True):
+    def __init__(self, dataset='MMBench', skip_noimg=True, local_data_dir=None):
         ROOT = LMUDataRoot()
         # You can override this variable to save image files to a different directory
         self.dataset_name = dataset
+        self.local_data_dir = local_data_dir
+        if not osp.exists(local_data_dir):
+            raise FileNotFoundError(f"specified local directory - {local_data_dir} for dataset {dataset}, does not exist")
         self.img_root = osp.join(ROOT, 'images', img_root_map(dataset))
 
         data = self.load_data(dataset)
@@ -81,13 +84,16 @@ class ImageBaseDataset:
     def __getitem__(self, idx):
         return dict(self.data.iloc[idx])
 
-    def prepare_tsv(self, url, file_md5=None):
-        data_root = LMUDataRoot()
-        os.makedirs(data_root, exist_ok=True)
+    def prepare_tsv(self, url=None, file_md5=None):
+        if self.local_data_dir is None:
+            data_root = LMUDataRoot()
+            os.makedirs(data_root, exist_ok=True)
+            file_name_legacy = url.split('/')[-1]
+            data_path_legacy = osp.join(data_root, file_name_legacy)
+        else:
+            data_root = self.local_data_dir
         update_flag = False
-        file_name_legacy = url.split('/')[-1]
         file_name = f"{self.dataset_name}.tsv"
-        data_path_legacy = osp.join(data_root, file_name_legacy)
         data_path = osp.join(data_root, file_name)
 
         self.data_path = data_path
@@ -95,20 +101,27 @@ class ImageBaseDataset:
             if file_md5 is None or md5(data_path) == file_md5:
                 pass
             else:
-                warnings.warn(f'The tsv file is in {data_root}, but the md5 does not match, will re-download')
-                download_file(url, data_path)
-                update_flag = True
+                if self.local_data_dir is None:
+                    warnings.warn(f'The tsv file is in {data_root}, but the md5 does not match, will re-download')
+                    download_file(url, data_path)
+                    update_flag = True
+                else:
+                    raise ValueError(f"the local .tsv path ({self.data_path}) for dataset {self.dataset_name} has a wrong MD5 code")
         else:
-            if osp.exists(data_path_legacy) and (file_md5 is None or md5(data_path_legacy) == file_md5):
-                warnings.warn(
-                    'Due to a modification in #1055, the local target file name has changed. '
-                    f'We detected the tsv file with legacy name {data_path_legacy} exists and will do the rename. '
-                )
-                import shutil
-                shutil.move(data_path_legacy, data_path)
+            if self.local_data_dir is None:
+                if osp.exists(data_path_legacy) and (file_md5 is None or md5(data_path_legacy) == file_md5):
+                    warnings.warn(
+                        'Due to a modification in #1055, the local target file name has changed. '
+                        f'We detected the tsv file with legacy name {data_path_legacy} exists and will do the rename. '
+                    )
+                    import shutil
+                    shutil.move(data_path_legacy, data_path)
+                else:
+                    download_file(url, data_path)
+                    update_flag = True
             else:
-                download_file(url, data_path)
-                update_flag = True
+                raise FileNotFoundError(f"when using local directory ({self.local_data_dir}) for VLMEvaKit, "
+                                        f"file of dataset {self.dataset_name} does not exist")
 
         if file_size(data_path, 'GB') > 1:
             local_path = data_path.replace('.tsv', '_local.tsv')
@@ -172,11 +185,14 @@ class ImageBaseDataset:
 
     # Given the dataset name, return the dataset as a pandas dataframe, can override
     def load_data(self, dataset):
-        url = self.DATASET_URL.get(dataset, None)
-        if url is None or url == '':
-            url = dataset + '.tsv'
         file_md5 = self.DATASET_MD5[dataset] if dataset in self.DATASET_MD5 else None
-        return self.prepare_tsv(url, file_md5)
+        if self.local_data_dir is None:
+            url = self.DATASET_URL.get(dataset, None)
+            if url is None or url == '':
+                url = dataset + '.tsv'
+            return self.prepare_tsv(url, file_md5)
+        else:
+            return self.prepare_tsv(file_md5=file_md5)
 
     # Post built hook, will be called after the dataset is built, can override
     def post_build(self, dataset):

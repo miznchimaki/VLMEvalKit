@@ -840,18 +840,22 @@ class MMERealWorld(ImageMCQDataset):
                 datas.loc[index, "E"] = options[4][4:]
             return datas
 
-        update_flag = False
-        cache_path = get_cache_path(repo_id)
-        if cache_path is not None and check_integrity(cache_path):
-            dataset_path = cache_path
-            print(f"Using cached dataset from {cache_path}")
-        else:
-            from huggingface_hub import snapshot_download
+        if self.local_data_dir is None:
+            update_flag = False
+            cache_path = get_cache_path(repo_id)
+            if cache_path is not None and check_integrity(cache_path):
+                dataset_path = cache_path
+                print(f"Using cached dataset from {cache_path}")
+            else:
+                from huggingface_hub import snapshot_download
 
-            # Download or find the dataset path
-            dataset_path = snapshot_download(repo_id=repo_id, repo_type="dataset")
+                # Download or find the dataset path
+                dataset_path = snapshot_download(repo_id=repo_id, repo_type="dataset")
+                generate_tsv(dataset_path)
+                update_flag = True
+        else:
+            dataset_path = self.local_data_dir
             generate_tsv(dataset_path)
-            update_flag = True
 
         data_path = os.path.join(dataset_path, f"{dataset}.tsv")
         if file_size(data_path, "GB") > 1:
