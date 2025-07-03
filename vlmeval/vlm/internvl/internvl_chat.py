@@ -104,6 +104,9 @@ def extract_boxed_content(ans: str):
     return content
 
 
+CONV_TEMPLATE_POOL = ("Hermes-2", "internlm2-chat", "phi3-chat", "internvl2_5")
+
+
 class InternVLChat(BaseModel):
     INSTALL_REQ = False
     INTERLEAVE = True
@@ -122,6 +125,8 @@ class InternVLChat(BaseModel):
                  #
                  use_lmdeploy=False,
                  use_postprocess=False,
+                 max_subimg_num=None,
+                 conv_template_str=None,
                  **kwargs):
 
         assert best_of_n >= 1
@@ -239,6 +244,12 @@ class InternVLChat(BaseModel):
         self.kwargs = kwargs_default
 
         warnings.warn(f'Following kwargs received: {self.kwargs}, will use as generation config. ')
+        if max_subimg_num is not None and (not isinstance(max_subimg_num, (int, float))):
+            raise TypeError(f"If param max_subimg_num is passed, it must be integer or float")
+        self.max_num = int(max_subimg_num)
+        if conv_template_str is not None:
+            assert conv_template_str in CONV_TEMPLATE_POOL
+            self.model.template = conv_template_str
 
     def use_custom_prompt(self, dataset):
         assert dataset is not None
@@ -473,7 +484,8 @@ class InternVLChat(BaseModel):
         return response
 
     def generate_inner(self, message, dataset=None):
-        self.set_max_num(dataset)
+        if self.max_num is None:
+            self.set_max_num(dataset)
         print(f'InternVL model version: {self.version}')
         if self.version in ['V1.1', 'V1.2']:
             return self.generate_v1_2(message, dataset)
@@ -568,7 +580,8 @@ class InternVLChat(BaseModel):
         return response
 
     def chat_inner(self, message, dataset=None):
-        self.set_max_num(dataset)
+        if self.max_num is None:
+            self.set_max_num(dataset)
 
         if self.version in ['V1.1', 'V1.2']:
             raise ValueError(f'Unsupported version for Multi-Turn: {self.version}')
