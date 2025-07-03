@@ -185,13 +185,21 @@ class InternVLChat(BaseModel):
             torch.cuda.set_device(0)
             self.device = 'cuda'
         else:
-            self.model = AutoModel.from_pretrained(
-                model_path,
-                torch_dtype=torch.bfloat16,
-                load_in_8bit=load_in_8bit,
-                trust_remote_code=True,
-                low_cpu_mem_usage=True,
-                device_map="auto").eval()
+            if torch.cuda.device_count() == 1:
+                self.model = AutoModel.from_pretrained(
+                    model_path,
+                    torch_dtype=torch.bfloat16,
+                    load_in_8bit=load_in_8bit,
+                    trust_remote_code=True,
+                    low_cpu_mem_usage=True).to("cuda").eval()
+            else:
+                self.model = AutoModel.from_pretrained(
+                    model_path,
+                    torch_dtype=torch.bfloat16,
+                    load_in_8bit=load_in_8bit,
+                    trust_remote_code=True,
+                    low_cpu_mem_usage=True,
+                    device_map="auto").eval()
             self.device = 'cuda'
 
         if best_of_n > 1:
