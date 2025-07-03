@@ -486,6 +486,8 @@ class InternVLChat(BaseModel):
     def generate_inner(self, message, dataset=None):
         if self.max_num is None:
             self.set_max_num(dataset)
+        else:
+            self.total_max_num = 64
         print(f'InternVL model version: {self.version}')
         if self.version in ['V1.1', 'V1.2']:
             return self.generate_v1_2(message, dataset)
@@ -582,6 +584,8 @@ class InternVLChat(BaseModel):
     def chat_inner(self, message, dataset=None):
         if self.max_num is None:
             self.set_max_num(dataset)
+        else:
+            self.total_max_num = 64
 
         if self.version in ['V1.1', 'V1.2']:
             raise ValueError(f'Unsupported version for Multi-Turn: {self.version}')
