@@ -208,13 +208,21 @@ class InternVLChat(BaseModel):
 
             self.reward_tokenizer = AutoTokenizer.from_pretrained(
                 reward_model_path, trust_remote_code=True, use_fast=False)
-            self.reward_model = AutoModel.from_pretrained(
-                reward_model_path,
-                torch_dtype=torch.bfloat16,
-                load_in_8bit=load_in_8bit,
-                trust_remote_code=True,
-                low_cpu_mem_usage=True,
-                device_map="auto").eval()
+            if torch.cuda.device_count() == 1:
+                self.reward_model = AutoModel.from_pretrained(
+                    reward_model_path,
+                    torch_dtype=torch.bfloat16,
+                    load_in_8bit=load_in_8bit,
+                    trust_remote_code=True,
+                    low_cpu_mem_usage=True).to("cuda").eval()
+            else:
+                self.reward_model = AutoModel.from_pretrained(
+                    reward_model_path,
+                    torch_dtype=torch.bfloat16,
+                    load_in_8bit=load_in_8bit,
+                    trust_remote_code=True,
+                    low_cpu_mem_usage=True,
+                    device_map="auto").eval()
 
             if not self.use_cot:
                 os.environ['USE_COT'] = '1'
