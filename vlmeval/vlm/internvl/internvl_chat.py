@@ -246,7 +246,10 @@ class InternVLChat(BaseModel):
         warnings.warn(f'Following kwargs received: {self.kwargs}, will use as generation config. ')
         if max_subimg_num is not None and (not isinstance(max_subimg_num, (int, float))):
             raise TypeError(f"If param max_subimg_num is passed, it must be integer or float")
-        self.max_num = int(max_subimg_num)
+        if max_subimg_num is not None:
+            self.max_num = int(max_subimg_num)
+        else:
+            self.max_num = max_subimg_num
         if conv_template_str is not None:
             assert conv_template_str in CONV_TEMPLATE_POOL
             self.model.template = conv_template_str
