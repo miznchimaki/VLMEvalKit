@@ -427,8 +427,8 @@ api_models = {
     "BailingMM-Pro-0120": partial(
         bailingMMAPI, model="BailingMM-Pro-0120", temperature=0, retry=10
     ),
-    # BlueLM-V
-    "BlueLM_V": partial(BlueLM_V_API, model="BlueLM-VL-v3.0", temperature=0, retry=10),
+    # BlueLM-2.5
+    "BlueLM-2.5-3B": partial(BlueLM_API, model="BlueLM-2.5-3B", temperature=0, retry=10),
     # JiuTian-VL
     "JTVL": partial(JTVLChatAPI, model="jt-vl-chat", temperature=0, retry=10),
     "Taiyi": partial(TaiyiAPI, model="taiyi", temperature=0, retry=10),
@@ -469,13 +469,13 @@ api_models = {
     ),
     # doubao_vl
     "DoubaoVL": partial(
-        DoubaoVL, model="Doubao-1.5-vision-pro", temperature=0, retry=10, verbose=False
+        DoubaoVL, model="Doubao-1.5-vision-pro", temperature=0, retry=3, verbose=False
     ),
     "Seed1.5-VL": partial(
         DoubaoVL, 
         model="doubao-1-5-thinking-vision-pro-250428", 
         temperature=0,
-        retry=10, 
+        retry=3, 
         verbose=False, 
         max_tokens=16384,
     ),
@@ -483,7 +483,7 @@ api_models = {
         DoubaoVL, 
         model="doubao-seed-1.6-250615", 
         temperature=0,
-        retry=10, 
+        retry=3, 
         verbose=False, 
         max_tokens=16384,
     ),
@@ -491,7 +491,7 @@ api_models = {
         DoubaoVL, 
         model="doubao-seed-1.6-flash-250615", 
         temperature=0,
-        retry=10, 
+        retry=3, 
         verbose=False, 
         max_tokens=16384,
     ),
@@ -499,7 +499,7 @@ api_models = {
         DoubaoVL, 
         model="doubao-seed-1.6-thinking-250615", 
         temperature=0,
-        retry=10, 
+        retry=3, 
         verbose=False, 
         max_tokens=16384,
     ),
@@ -1473,6 +1473,14 @@ kimi_vllm_series = {
 }
 
 
+treevgr_series = {
+    'TreeVGR-7B': partial(
+        TreeVGR, 
+        model_path='HaochenWang/TreeVGR-7B',
+        min_pixels=1280*28*28, max_pixels=16384*28*28,
+    ),
+}
+
 internvl_groups = [
     internvl, internvl2, internvl2_5, mini_internvl, internvl2_5_mpo, 
     internvl3,
@@ -1495,7 +1503,7 @@ model_groups = [
     aria_series, smolvlm_series, sail_series, valley_series, vita_series,
     ross_series, emu_series, ola_series, ursa_series, gemma_series,
     long_vita_series, ristretto_series, kimi_series, aguvis_series, hawkvl_series, 
-    flash_vl, kimi_vllm_series, oryx_series
+    flash_vl, kimi_vllm_series, oryx_series, treevgr_series
 ]
 
 for grp in model_groups:
